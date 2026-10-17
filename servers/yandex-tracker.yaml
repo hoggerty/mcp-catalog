@@ -1,0 +1,35 @@
+name: yandex-tracker
+title: Yandex Tracker
+type: server
+image: ghcr.io/hoggerty/mcp-yandex-tracker:0.1.1
+description: Задачи, очереди, доски, спринты, пользователи и ворклоги Яндекс Трекера
+secrets:
+  - name: yandex-tracker.token
+    env: YANDEX_TRACKER_TOKEN
+    example: y0_...
+env:
+  - name: YANDEX_TRACKER_ORG_ID
+    value: '{{yandex-tracker.org_id}}'
+  - name: YANDEX_TRACKER_CLOUD_ORG_ID
+    value: '{{yandex-tracker.cloud_org_id}}'
+  - name: YANDEX_TRACKER_TOOLS_MODE
+    value: '{{yandex-tracker.tools_mode}}'
+  - name: YANDEX_TRACKER_TOOLS
+    value: '{{yandex-tracker.tools}}'
+config:
+  - name: yandex-tracker
+    description: Подключение к Яндекс Трекеру. Укажите ровно одно из org_id / cloud_org_id.
+    type: object
+    properties:
+      org_id:
+        type: string
+        description: ID организации Яндекс 360 (заголовок X-Org-ID)
+      cloud_org_id:
+        type: string
+        description: ID организации Yandex Cloud (заголовок X-Cloud-Org-ID)
+      tools_mode:
+        type: string
+        description: "read-only | read-write (по умолчанию) | full"
+      tools:
+        type: string
+        description: "Glob-паттерны тулов через запятую; * — все, разрешённые режимом; пусто — набор по умолчанию"
