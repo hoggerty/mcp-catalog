@@ -9,8 +9,10 @@ TITLE    ?= hoggerty MCP
 CATALOG  := $(REGISTRY)/$(NAME)
 
 SERVERS      := $(wildcard servers/*.yaml)
-SERVER_FLAGS := $(foreach f,$(SERVERS),--server file://./$(f))
 TEST_PROFILE ?= catalog-test
+
+MCP_CATALOGS_DIR := $(HOME)/.docker/mcp/catalogs/$(notdir $(REGISTRY))
+SERVER_FLAGS     := $(foreach f,$(SERVERS),--server file://$(MCP_CATALOGS_DIR)/$(notdir $(f)))
 
 .PHONY: help
 help:
@@ -34,14 +36,19 @@ check-images: ## каждый образ скачивается анонимно
 	done; rm -rf $$tmp
 	@echo "Ok: All images is public"
 
+.PHONY: sync-local-catalog
+sync-local-catalog: ## скопировать servers/*.yaml в ~/.docker/mcp/catalogs (требование docker mcp для file://)
+	@mkdir -p $(MCP_CATALOGS_DIR)
+	@cp $(SERVERS) $(MCP_CATALOGS_DIR)/
+
 .PHONY: test
-test: ## добавить серверы из servers/ в локальный профиль для ручной проверки
+test: sync-local-catalog ## добавить серверы из servers/ в локальный профиль для ручной проверки
 	-docker mcp profile create --name $(TEST_PROFILE)
-	@for f in $(SERVERS); do docker mcp profile server add $(TEST_PROFILE) --server file://./$$f; done
+	@for f in $(SERVERS); do docker mcp profile server add $(TEST_PROFILE) --server file://$(MCP_CATALOGS_DIR)/$$(basename $$f); done
 	@echo "Configure secrets and parameters in Docker Desktop → MCP Toolkit → profile $(TEST_PROFILE)"
 
 .PHONY: build
-build: guard-version check ## собрать каталог локально
+build: guard-version check sync-local-catalog ## собрать каталог локально
 	docker mcp catalog create $(CATALOG):$(VERSION) --title "$(TITLE)" $(SERVER_FLAGS)
 	docker mcp catalog show $(CATALOG):$(VERSION) --format yaml
 
