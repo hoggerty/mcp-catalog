@@ -3,7 +3,7 @@
 Каталог MCP-серверов для [Docker MCP Toolkit](https://docs.docker.com/ai/mcp-catalog-and-toolkit/).
 Подключается одной командой, токены у каждого свои и хранятся локально в Docker.
 
-**Текущая версия каталога:** `ghcr.io/hoggerty/mcp-catalog:v1`
+**Текущая версия каталога:** `ghcr.io/hoggerty/mcp-catalog:v0.0.1`
 
 ## Что внутри
 
